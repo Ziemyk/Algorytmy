@@ -1,0 +1,180 @@
+#include<iostream>
+#include<cmath>
+#include<string>
+#include<queue>
+
+using namespace std;
+double max_atr = 0.0;
+struct Queue{
+    Queue(double a,const string& n ,int i=-1){
+        attractive = a;
+        name = n;
+        index = i;
+    }
+    double attractive;
+    string name;
+    int index;
+
+};
+struct bool_operator{
+    bool operator () (Queue * s1,  Queue * s2){
+        return s1->attractive < s2->attractive || (s1->attractive == s2->attractive && s1->index < s2->index);
+
+    }
+};
+
+struct BST {
+    BST( int p) {
+        price = p;
+        left = nullptr;
+        right = nullptr;
+
+    }
+    int price;
+    priority_queue<Queue*,vector<Queue*>,bool_operator> q;
+    BST* left;
+    BST* right;
+
+};
+void add(double attractive, int price, const string& nick, BST *&root, int index) {
+
+    if (root == nullptr) {
+        root = new BST(price);
+        root->q.emplace(new Queue(attractive,nick,index));
+        return ;
+    }
+    if (price > root->price) {
+        add(attractive, price, nick, root->right,index);
+
+    }
+    else if (price < root->price) {
+        add(attractive, price, nick, root->left,index);
+
+    }
+    else if(price == root->price){
+        root->q.emplace(new Queue(attractive,nick,index));
+    }
+
+}
+void delete_node(BST*& root,bool lr){
+    if(lr == 0 && root->right != nullptr){
+        delete_node(root->right,lr);
+    }
+    else if(lr == 1 && root->left != nullptr){
+        delete_node(root->left,lr);
+    }
+    else if(lr == 0 && root->right == nullptr){
+        root= root->right;
+    }
+    else if(lr == 1 && root->left == nullptr){
+        root = root->left;
+    }
+}
+void remove(BST *& root, int price) {
+    BST* temp = nullptr;
+    if (root == nullptr) {
+        return;
+    }
+    if (price < root->price) {
+        remove(root->left, price);
+
+    }
+    else if (price > root->price) {
+        remove(root->right, price);
+
+    }
+    // dla zadnego lub jednego potomka
+    else if(root->left == nullptr) {
+        root = root->right;
+
+    }
+    else if (root->right == nullptr) {
+        root = root->left;
+
+    }
+    else if (root->right && root->left ) {
+
+        //srand(time(NULL));
+       // int k = rand() % 2;
+        int k = 1;
+        if (k == 0) { // trafilo na lewo
+            temp = root->left;
+            while (temp->right) {
+                temp = temp->right;
+            }
+            root->price = temp->price;
+            root->q = temp->q;
+            delete_node(root->left,0);
+
+
+        }
+        else { //trafilo na prawo
+            temp = root->right;
+            while (temp->left) {
+                temp = temp->left;
+            }
+            root->price = temp->price;
+            root->q = temp->q;
+            delete_node(root->right,1);
+
+        }
+    }
+
+}
+void search(int price, BST*& root) {
+    if(root == nullptr){
+        cout<<"-\n";
+        return;
+    }
+
+    if (root->price == price ) {
+        Queue  *node = root->q.top();
+        if(node->attractive >= max_atr && root->q.empty() == false ){
+            cout<<node->name<<'\n';
+            root->q.pop();
+        }
+        else{
+            cout<<"-\n";
+        }
+        if(root->q.empty()==true){
+            remove(root,price);
+        }
+    }
+    else if ( root->price < price) {
+        search(price,  root->right);
+    }
+    else if(  root->price > price){
+        search(price,  root->left);
+    }
+}
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int N;
+    cin >> N;
+    char AorS;
+    double X, F;
+    int Y, Z, B;
+    string S;
+    double attractiv;
+    BST* tree = nullptr;
+    for (int i = 0; i < N; i++) {
+        cin >> AorS;
+        if (AorS == 'A') {
+            cin >> X >> Y >> Z >> S;
+            attractiv =(X / 5) * (Y / 1000);
+            add(attractiv, Z, S, tree,i);
+        }
+        else {
+            cin >> B >> F;
+            max_atr = F;
+            search(B, tree);
+        }
+
+    }
+    delete tree;
+    return 0;
+
+}
