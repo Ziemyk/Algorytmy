@@ -1,0 +1,94 @@
+#include <iostream>
+
+
+
+using namespace std;
+struct warzywa {
+    float z;
+    int d;
+    int m;
+};
+void sort(float** tabf, string* nazwa, int n) {
+    string tmp;
+    float key[3];
+    for (int i = 1; i < n; i++) {
+        int j = i;
+        while (j > 0 && (tabf[0][j - 1] < tabf[0][j] || (tabf[0][j - 1] == tabf[0][j] && tabf[1][j - 1] < tabf[1][j]) || (tabf[0][j - 1] == tabf[0][j] && tabf[1][j - 1] == tabf[1][j] && tabf[2][j - 1] < tabf[2][j]))) {
+            for(int k=0;k<3;k++){
+                key[k] = tabf[k][j];
+            }
+            tmp = nazwa[j];
+            for(int k=0;k<3;k++){
+                tabf[k][j] = tabf[k][j-1];
+            }
+            for(int k=0;k<3;k++){
+                tabf[k][j-1] = key[k];
+            }
+            nazwa[j]=nazwa[j-1];
+            nazwa[j-1]=tmp;
+            --j;
+        }
+    }
+}
+
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+        std::cin.tie(nullptr);
+        std::cout.tie(nullptr);
+    int n;
+    cin >> n;
+    int arr[3];
+    cin >> arr[0] >> arr[1] >> arr[2];
+    string** nazwy = new string*[2];
+    nazwy[0] = new string[n];
+    nazwy[1] = new string[n];
+    warzywa* tabk = new warzywa[n];
+
+    float** tabf = new float* [3];
+    for (int i = 0; i < 3; i++) {
+        tabf[i] = new float[n];
+    }
+
+
+
+    for (int k = 0; k < 2; ++k) {
+        for (int i = 0; i < n; i++) {
+            cin >> nazwy[k][i] >> tabk[i].z >> tabk[i].d >> tabk[i].m;
+        }
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < n; j++) {                                                                                              //Z D M                                                                                                      //1 2 3
+                switch (arr[i]) {
+                case 1:
+                    tabf[i][j] = tabk[j].z;
+                    break;
+                case 2:
+                    tabf[i][j] = tabk[j].d;
+                    break;
+                case 3:
+                    tabf[i][j] = tabk[j].m;
+                    break;
+                }
+            }
+        }
+        sort(tabf, nazwy[k], n);
+
+    }
+
+
+
+    for (int i = 0; i < n; i++) {
+        cout << nazwy[0][i] << "-" << nazwy[1][i] << " ";
+    }
+
+    delete[] tabk;
+    for (int i = 0; i < 3; i++) {
+        delete[] tabf[i];
+    }
+    delete[] tabf;
+    delete[] nazwy[0];
+    delete[] nazwy[1];
+    delete[] nazwy;
+    return 0;
+
+}
