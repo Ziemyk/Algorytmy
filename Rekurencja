@@ -1,0 +1,62 @@
+#include <iostream>
+
+using namespace std;
+int minimum = 1000001;
+
+struct Stanowisko{
+    int s;
+    int c;
+};
+void stanowiska(Stanowisko *stan,bool b,int i,int n,int estetyka,int koszt){
+    if(koszt >= minimum){
+        return;
+    }
+    if(koszt<minimum && estetyka == 0 && b == true){
+        minimum=koszt;
+        return;
+    }
+    if(i>=n){
+        return;
+    }
+    i++;
+    stanowiska(stan,b,i,n,estetyka,koszt);
+    stanowiska(stan,true,i,n,estetyka+stan[i-1].s,koszt+stan[i-1].c);
+}
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int t;
+    cin>>t;
+    int *arr = new int[t];
+    for(int i=0;i<t;i++){
+        int n;
+        cin>>n;
+        Stanowisko *stanowisko = new Stanowisko[n];
+        for(int j=0;j<n;j++){
+            cin>>stanowisko[j].s>>stanowisko[j].c;
+
+        }
+        stanowiska(stanowisko,false,0,n,0,0);
+        if(minimum<1000001){
+            arr[i]=minimum;
+        }else{
+            arr[i]=-1;
+        }
+        minimum = 1000001;
+
+
+        delete [] stanowisko;
+    }
+    for(int i=0;i<t;i++){
+        if(arr[i] == -1){
+            cout<<"NIE"<<'\n';
+        }else{
+            cout<<arr[i]<<'\n';
+        }
+    }
+    delete [] arr;
+
+    return 0;
+}
