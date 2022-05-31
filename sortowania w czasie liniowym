@@ -1,0 +1,83 @@
+#include <iostream>
+#include <bitset>
+using namespace std;
+
+bitset<20> bitset_compared(string line,int k){
+    bitset<20> compared=0b00000000000000000000;
+    int j=k;
+    for(int i=0;i<k;i++){
+        if(line[j-1]=='X'){
+            compared.set(i,true);
+        }
+        j--;
+
+    }
+    return compared;
+}
+void print_string(bitset<20> b,int k){
+    for(int i=k-1;i>=0;i--){
+
+        if(b[i] == 0){
+            cout<<'o';
+        }else{
+            cout<<'X';
+        }
+    }
+    cout<<'\n';
+}
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int n,m;
+    int k;
+    cin>>n>>k>>m;
+  
+    string szyfr;
+    bitset<20>* b=new bitset<20>[n];
+    for(int i=0;i<n;i++){
+        cin>>szyfr;
+        b[i] = bitset_compared(szyfr,k);
+    }
+    for(int i=0;i<k;i++){
+        bitset<20>*tmp=new bitset<20>[n];
+        int licz_o = 0;
+        int licz_X = 0;
+        for(int j=0;j<n;j++){
+            if(b[j][i] == 0){
+                licz_X++;
+            }
+        }
+
+        for(int j=0;j<n;j++){
+            if(b[j][i] == 0){
+                tmp[licz_o] = b[j];
+                licz_o++;
+            }else{
+                tmp[licz_X] = b[j];
+                licz_X++;
+            }
+
+
+        }
+        
+        if(i<k-1){
+            for(int j=0;j<n;j++){
+                b[j] = tmp[j];
+            }
+        }else{
+            for(int j =0;j<m;j++){
+                print_string(tmp[n-j-1],k);
+
+            }
+            break;
+        }
+        delete []tmp;
+    }
+    delete []b;
+
+
+
+    return 0;
+}
