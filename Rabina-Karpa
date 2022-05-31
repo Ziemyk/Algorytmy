@@ -1,0 +1,102 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+int hash_(int* arr, int n) {
+    int tmp = 0;
+    for (int i = 0; i < n; i++) {       
+        tmp = (101 * tmp + arr[i]) % 7;
+    }
+    return tmp;
+
+}
+pair<int,int> search(int* arr_t, int* arr_p, int V, int M) {
+    pair<int, int>  firstTwo;
+    long int l=0;
+    long int i = 0;
+    long int p;
+    long int t;
+    long int H=1;
+    for (int i = 0; i < M - 1; i++)
+    {
+        H = (H * 101) % 7;
+    }
+    t = hash_(arr_t, M);
+    p = hash_(arr_p, M);
+    
+    while (i<=V-M ) {
+
+        bool flag = false;
+        if (p == t) {
+            
+            for (int j = 0; j < M; j++) {
+                if (arr_t[i+j] != arr_p[j]) {
+                    flag = true;
+                    break;
+                    
+                }
+            }
+            if (flag == false) {            
+                if (l == 0) {
+                    firstTwo.first = i;
+                }
+                else {
+                    firstTwo.second = i;
+  
+                    break;
+                }
+                l++;
+                
+            }
+            flag = false;
+        }
+        if (i < V - M) {
+            t = (101 * (t - arr_t[i] * H) + arr_t[i + M]) ;
+            t %= 7;
+            if (t < 0) {
+                t = t + 7;
+            }
+        }
+        i++;
+    }
+    return firstTwo;
+}
+long int fib(long int first, long int second, int V) {
+    int result;
+    while (true)
+    {
+        result = first + second;
+        first = second;
+        second = result;
+        if (result >= V) {
+            return result - V;
+            
+        }
+        
+    }  
+}
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int V;
+    cin >> V;
+    int* arr_t = new int[V];
+    for (int i = 0; i < V; i++) {
+        cin >> arr_t[i];
+    }
+    int M;
+    cin >> M;
+    int* arr_p = new int[M];
+    for (int i = 0; i < M; i++) {
+        cin >> arr_p[i];
+    }
+    pair<long int, long int> firstTwo;    
+    firstTwo = search(arr_t, arr_p, V, M);   
+    long int result = fib(firstTwo.first, firstTwo.second, V);
+    cout << result << '\n';
+    delete[] arr_t;
+    delete[] arr_p;
+    return 0;
+}
