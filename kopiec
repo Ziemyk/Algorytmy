@@ -1,0 +1,154 @@
+#include <iostream>
+#include <vector>
+
+
+using namespace std;
+struct uczestnicy{
+    int wartosc;
+    int index;
+};
+uczestnicy *arr;
+int k=0;
+void wstaw(uczestnicy x){
+    int i = k++;
+    int j =(i-1)/2;
+
+    while(i>0 && arr[j].wartosc<=x.wartosc){
+        if(arr[j].wartosc==x.wartosc && arr[j].index>x.index){
+            arr[i] = arr[j];
+            i = j;
+            j = (i-1)/2;
+        }else if(arr[j].wartosc==x.wartosc && arr[j].index<x.index){
+            break;
+        }else if(arr[j].wartosc<x.wartosc){
+            arr[i] = arr[j];
+            i = j;
+            j = (i-1)/2;
+        }
+
+    }
+    arr[i] = x;
+}
+uczestnicy usuwanie(){
+    uczestnicy tmp;
+    uczestnicy x;
+    int i = 1;
+    int j = 0;
+    k--;
+    tmp = arr[k];
+    x = arr[0];
+    while(i<k){
+        if(i<k-1 && arr[i+1].wartosc>=arr[i].wartosc){
+            if(arr[i+1].wartosc == arr[i].wartosc && arr[i+1].index < arr[i].index){
+                i++;
+            }else if(arr[i+1].wartosc>arr[i].wartosc){
+                i++;
+            }
+        }
+        if(tmp.wartosc >= arr[i].wartosc){
+            if(tmp.wartosc == arr[i].wartosc && tmp.index > arr[i].index){
+                arr[j] = arr[i];
+                j = i;
+                i = 2*i+1;
+            }
+            else {
+                break;
+            }
+        }
+        else{
+            arr[j] = arr[i];
+            j = i;
+            i = 2*i+1;
+        }
+    }
+    arr[j] = tmp;
+
+    return x;
+
+}
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int t;
+    cin>>t;
+
+
+    int n;
+    uczestnicy l;
+    for(int i=0;i<t;i++){
+        cin>>n;
+        if(n>=2 && n<=200000){
+            arr = new uczestnicy[n];
+            for(int j=0;j<n;j++){
+                cin>>l.wartosc;
+                l.index = j+1;
+                if(l.wartosc<200000 && l.wartosc>0){
+                    wstaw(l);
+                }
+            }
+
+        }
+        vector<pair<int,int>> rozmowy;
+        int ile_rozmow = 0;
+        uczestnicy rozmowa_1 ;
+        uczestnicy rozmowa_2 ;
+        while(1){
+
+            rozmowa_1.wartosc = 0;
+            rozmowa_2.wartosc = 0;
+            if(k>1){
+                rozmowa_1 = usuwanie();
+                rozmowa_2 = usuwanie();
+            }
+            if(rozmowa_1.wartosc > 0 && rozmowa_2.wartosc > 0){
+                ile_rozmow++;
+                pair<int,int> para;
+                if(rozmowa_1.index<rozmowa_2.index){
+                    //cout<<rozmowa_1.index<<" "<<rozmowa_2.index<<endl;
+                    para.first = rozmowa_1.index;
+                    para.second = rozmowa_2.index;
+                    rozmowy.push_back(para);
+                }
+                else if(rozmowa_1.index>rozmowa_2.index){
+                    para.first = rozmowa_2.index;
+                    para.second = rozmowa_1.index;
+                    rozmowy.push_back(para);
+                }
+                rozmowa_1.wartosc -= 1;
+                rozmowa_2.wartosc -= 1;
+                if(rozmowa_1.wartosc>0){
+                    wstaw(rozmowa_1);
+                }
+
+                if(rozmowa_2.wartosc>0){
+                    wstaw(rozmowa_2);
+                }
+
+
+
+
+            }else{
+                break;
+            }
+            //cout<<endl;
+
+        }
+
+        k=0;
+        delete []arr;
+        cout<<ile_rozmow<<'\n';
+
+        for(int j=0;j<ile_rozmow;j++){
+            cout<<rozmowy[j].first<<" "<<rozmowy[j].second<<'\n';
+        }
+
+
+
+    }
+
+
+
+    return 0;
+}
