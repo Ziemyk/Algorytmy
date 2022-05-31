@@ -1,0 +1,105 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+struct Points{
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+
+};
+int k=1;
+bool SortByX(Points a, Points b){
+    return (a.x1<b.x1);
+
+}
+bool SortByY(Points a, Points b){
+    return (a.y1<b.y1);
+
+}
+void OS_Y_MID(int poczatek,int koniec, Points arr[1000], bool b);
+void OS_X_MID(int poczatek, int koniec, Points arr[1000], bool b){
+    int maks;
+    if(poczatek<koniec-1){
+        sort(arr+poczatek,arr+koniec,SortByX);
+        maks = arr[poczatek].x2;
+        for(int i=poczatek+1;i<koniec;i++){
+            if(arr[i].x1 >= maks){
+                k++;
+                //cout<<k<<endl;
+                OS_Y_MID(poczatek,i,arr,true);
+                poczatek =i;
+                b=false;
+            }
+
+            if(arr[i].x2>maks){
+                maks = arr[i].x2;
+            }
+        }
+        if(b == false){
+            OS_Y_MID(poczatek,koniec,arr,true);
+        }
+    }
+
+}
+void OS_Y_MID(int poczatek,int koniec, Points arr[1000], bool b ){
+    if(poczatek<koniec-1){
+        sort(arr+poczatek,arr+koniec,SortByY);
+        int maks = arr[poczatek].y2;
+        for(int i=poczatek+1;i<koniec;i++){
+            if(arr[i].y1>=maks){
+                k++;
+                //cout<<k<<endl;
+                OS_X_MID(poczatek,i,arr,true);
+                poczatek =i;
+                b=false;
+
+            }
+            if(arr[i].y2>maks){
+                maks = arr[i].y2;
+            }
+        }
+
+        if(b == false){
+            OS_X_MID(poczatek,koniec,arr,true);
+        }
+    }
+}
+int main()
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int t;
+    cin>>t;
+    int *arr_t = new int[t];
+    int n;
+    for(int i=0;i<t;i++){
+        cin>>n;
+        Points *points = new Points[n];
+        for(int j=0;j<n;j++){
+            cin>>points[j].x1>>points[j].y1>>points[j].x2>>points[j].y2;
+        }
+        OS_X_MID(0,n,points,false);
+        if(k == n ){
+            arr_t[i] = 1;
+        }else{
+            arr_t[i] = 0;
+        }
+        k=1;
+        delete [] points;
+        //cout<<l<<endl;
+
+    }
+    for(int i=0;i<t;i++){
+        if(arr_t[i] == 1){
+            cout<<"TAK"<<'\n';
+        }
+        else{
+            cout<<"NIE"<<'\n';
+
+        }
+    }
+    delete [] arr_t;
+}
