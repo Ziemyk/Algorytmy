@@ -99,4 +99,5 @@ int main()
     delete[] arr_t;
     delete[] arr_p;
     return 0;
+    
 }
