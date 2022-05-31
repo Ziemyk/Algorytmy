@@ -1,0 +1,265 @@
+#include<iostream>
+
+using namespace std;
+ 
+struct Node {
+ 
+    Node(int _c, string _plant) {
+        c = _c;
+        plant = _plant;
+        next = nullptr;
+        prev = nullptr;
+    }
+ 
+    int c;
+    string plant;
+    Node* next, * prev;
+};
+ 
+Node** arrayoflist;
+int index_arr = 0;
+ 
+void add(Node** main_root, int v, string s) {
+    Node* newNode = new Node(v, s);
+ 
+    if (*main_root == NULL) {                  //Jesli lista jest pusta
+        newNode->next = newNode;
+        newNode->prev = newNode;
+        *main_root = newNode;
+ 
+        return;
+    }
+    //Jesli lista juz nie jest pusta
+    Node* tail = (*main_root)->prev;
+    newNode->next = *main_root;
+    (*main_root)->prev = newNode;
+    newNode->prev = tail;
+    tail->next = newNode;
+}
+ 
+void del_value(Node** main_root) {
+    if (*main_root == (*main_root)->next) {
+        delete *main_root;
+        *main_root = NULL;
+ 
+        return;
+    }
+ 
+    (*main_root)->prev->next = (*main_root)->next;
+    (*main_root)->next->prev = (*main_root)->prev;
+ 
+    Node* buffer = (*main_root)->next;
+    delete *main_root;
+    *main_root = buffer;
+}
+ 
+void rotate_ArrOfList( int x, int n) {
+    index_arr = (index_arr + (((x % n) + n) %n)) % n;
+}
+ 
+Node* rotate_List(int y) {
+    if (y > 0) {
+        for (int i = 0; i < y; ++i) {
+            arrayoflist[index_arr] = arrayoflist[index_arr]->next;
+        }
+    }
+    else if (y < 0) {
+        for (int i = 0; i < abs(y); ++i) {
+            arrayoflist[index_arr] = arrayoflist[index_arr]->prev;
+        }
+    }
+ 
+    return arrayoflist[index_arr];
+}
+ 
+void printer(Node* start)
+{
+    Node* tmp = start;
+ 
+    while (tmp->next != start) {
+        cout << tmp->plant << " " << tmp->c << "\n";
+        tmp = tmp->next;
+    }
+    cout << tmp->plant << " " << tmp->c << "\n";
+}
+int binary_serach(int arr[], int first, int last, int x) {
+    if (last >= first) {
+        int centry = (first + last) / 2;
+        if (arr[centry] == x) {
+            return centry;
+        }
+        if (arr[centry] > x) {
+            return binary_serach(arr, first, centry - 1, x);
+        }
+        if (arr[centry] <= x) {
+            return binary_serach(arr, centry + 1, last, x);
+        }
+    }
+    return -1;
+}
+ 
+void del_arr(Node** arr, int index, int n) {
+ 
+    for (int i = index; i < n - 1; i++) {
+        arr[i] = arr[i + 1];
+    }
+ 
+    arr[n - 1] = NULL;
+}
+void del_arr_fileds(int* arr, int index, int n) {
+ 
+    for (int i = index; i < n - 1; i++) {
+        arr[i] = arr[i + 1];
+    }
+ 
+    arr[n - 1] = 0;
+ 
+}
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    int n, nn;
+    cin >> nn;
+    n = nn;
+    arrayoflist = new Node * [n];
+    if (n != 0) {
+        int m;
+        int t_c;
+        string t_p;
+ 
+        for (int i = 0; i < n; i++) {
+            cin >> m;
+            Node* tmp_node = nullptr;
+            arrayoflist[i] = tmp_node;
+            for (int j = 0; j < m; j++) {
+                cin >> t_p >> t_c;
+                add(&arrayoflist[i], t_c, t_p);
+ 
+            }
+        }
+ 
+        int l, ll;
+        cin >> ll;
+        l = ll;
+ 
+        if (l != 0) {
+            int* fields;
+            fields = new int[l];
+            for (int i = 0; i < l; i++) {
+                cin >> fields[i];
+            }
+            
+ 
+ 
+ 
+            int h;
+ 
+            int sum = 0;
+          
+            int k = 0;
+           
+            int found;
+            cin >> h;
+            int* x = new int[h];
+            int* y = new int[h];
+            for (int i = 0; i < h; i++) {
+                cin >> x[i] >> y[i];
+            }
+ 
+ 
+            for (int i = 0; i < n; i++) {
+                sum += arrayoflist[i]->c;
+            }
+ 
+            while ((found = binary_serach(fields, 0, l, sum)) != -1 && l > 0 && n > 0) {
+                std::cout << sum << " ";
+                for (int i = 0; i < n; i++) {
+                    std::cout << arrayoflist[i]->plant << " ";
+                }
+                std::cout << "\n";
+ 
+                for (int i = 0; i < n; i++) {
+                    //cout<<"siema"<<endl;
+                    del_value(&arrayoflist[i]);
+                    if (arrayoflist[i] == NULL) {
+                        del_arr(arrayoflist, i, n);
+ 
+                        if (index_arr > i) {
+                            index_arr--;
+                        }
+ 
+                        n = n - 1;
+                        i--;
+                    }
+                }
+ 
+                del_arr_fileds(fields, found, l);
+ 
+                sum = 0;
+                for (int i = 0; i < n; i++) {
+                    sum += arrayoflist[i]->c;
+                }
+ 
+                l--;
+                k++;
+            }
+ 
+ 
+ 
+            if (h > 0) {
+                for (int i = 0; i < h; i++) {
+                    if (l > 0 && n > 0) {
+                        rotate_ArrOfList( x[i], n);
+ 
+                        sum -= arrayoflist[index_arr]->c;
+ 
+                        rotate_List(y[i]);
+ 
+                        sum += arrayoflist[index_arr]->c;
+ 
+                        while ((found = binary_serach(fields, 0, l, sum)) != -1 && l > 0 && n > 0) {
+                            del_arr_fileds(fields, found, l);
+ 
+                            std::cout << sum << " ";
+                            for (int i = 0; i < n; i++) {
+                                std::cout << arrayoflist[i]->plant << " ";
+                            }
+                            std::cout << "\n";
+                            //cout<<endl;
+ 
+                            for (int j = 0; j < n; j++) {
+                                del_value(&arrayoflist[j]);
+                                if (arrayoflist[j] == NULL) {
+                                    // cout<<"siema Null"<<endl;
+                                    del_arr(arrayoflist, j, n);
+ 
+                                    if (index_arr > j) {
+                                        index_arr--;
+                                    }
+ 
+                                    n = n - 1;
+                                    j--;
+                                }
+                            }
+ 
+                            sum = 0;
+                            for (int q = 0; q < n; q++) {
+                                sum += arrayoflist[q]->c;
+                            }
+ 
+                            k++;
+                            l--;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+ 
+            delete[] fields;
+            delete[] arrayoflist;
+        }
+    }
+}
